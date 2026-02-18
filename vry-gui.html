@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VRY — VALORANT Rank Yoinker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0b0f;
+    --surface: #10121a;
+    --surface2: #161923;
+    --border: #1e2333;
+    --border-bright: #2a3050;
+    --accent: #ff4655;
+    --accent2: #bd3944;
+    --gold: #c8b862;
+    --text: #d4d8e8;
+    --text-dim: #5a607a;
+    --text-muted: #8890ab;
+    --blue: #4c97ed;
+    --red: #ee4d4d;
+    --green: #12cc19;
+    --teal: #18a452;
+    --iron: #484542;
+    --bronze: #bb8f5a;
+    --silver: #aeb2b2;
+    --gold-rank: #c5ba3f;
+    --platinum: #18a7b9;
+    --diamond: #d864c7;
+    --ascendant: #18a452;
+    --immortal: #dd4444;
+    --radiant: #fffdcd;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Barlow', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+    position: relative;
+  }
+
+  .logo-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .logo-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.12em;
+    color: #fff;
+  }
+
+  .logo-text span {
+    color: var(--accent);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    position: relative;
+    transition: background 0.3s;
+  }
+
+  .status-dot.connected {
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse-dot 2s infinite;
+  }
+
+  .status-dot.error {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .status-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .state-badge {
+    padding: 4px 12px;
+    border-radius: 2px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+  }
+
+  .state-badge.ingame {
+    background: rgba(255,70,85,0.12);
+    border-color: rgba(255,70,85,0.4);
+    color: #ff8591;
+  }
+
+  .state-badge.pregame {
+    background: rgba(103,237,76,0.12);
+    border-color: rgba(103,237,76,0.4);
+    color: #67ed4c;
+  }
+
+  .state-badge.menus {
+    background: rgba(238,241,54,0.1);
+    border-color: rgba(238,241,54,0.35);
+    color: #eef136;
+  }
+
+  .state-badge.waiting {
+    background: rgba(90,96,122,0.15);
+    border-color: rgba(90,96,122,0.3);
+    color: var(--text-muted);
+  }
+
+  .map-info {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+  }
+
+  /* Main content */
+  .main {
+    padding: 24px 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* Teams */
+  .teams-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .team-section {
+    margin-bottom: 12px;
+  }
+
+  .team-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 6px 0;
+    margin-bottom: 4px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .team-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .team-label.blue { color: var(--blue); }
+  .team-label.red { color: var(--red); }
+
+  /* Player cards */
+  .players-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .player-card {
+    display: grid;
+    grid-template-columns: 52px 1fr 200px 140px 140px 100px 80px;
+    align-items: center;
+    gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+    transition: border-color 0.2s, background 0.2s;
+    animation: card-in 0.35s ease both;
+  }
+
+  .player-card:hover {
+    border-color: var(--border-bright);
+    background: var(--surface2);
+  }
+
+  @keyframes card-in {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .player-card.self {
+    border-left: 3px solid var(--accent);
+  }
+
+  .player-card.self::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(255,70,85,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* Agent icon cell */
+  .agent-cell {
+    width: 52px;
+    height: 52px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .agent-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    filter: brightness(0.9);
+    transition: filter 0.2s;
+  }
+
+  .player-card:hover .agent-icon { filter: brightness(1.05); }
+
+  .agent-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--text-dim);
+  }
+
+  /* Name cell */
+  .name-cell {
+    padding: 0 14px;
+    min-width: 0;
+  }
+
+  .player-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.03em;
+  }
+
+  .player-name.blue { color: var(--blue); }
+  .player-name.red { color: var(--red); }
+  .player-name.self-color { color: #dde041; }
+
+  .agent-name {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    margin-top: 1px;
+  }
+
+  /* Party icon */
+  .party-icon {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
+  /* Rank cell */
+  .rank-cell {
+    padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .rank-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .rr-value {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* Peak rank cell */
+  .peak-cell {
+    padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .peak-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  .peak-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  /* HS cell */
+  .hs-cell {
+    padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .hs-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  .hs-value {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .hs-bar {
+    width: 60px;
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    overflow: hidden;
+    margin-top: 3px;
+  }
+
+  .hs-bar-fill {
+    height: 100%;
+    border-radius: 1px;
+    transition: width 0.6s ease;
+  }
+
+  /* RR change cell */
+  .rr-cell {
+    padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .rr-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  .rr-change {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .rr-change.positive { color: var(--green); }
+  .rr-change.negative { color: var(--red); }
+  .rr-change.zero { color: var(--text-muted); }
+  .rr-change.na { color: var(--text-dim); }
+
+  /* Level cell */
+  .level-cell {
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .level-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    padding: 2px 7px;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+
+  /* Divider between teams */
+  .team-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-bright), transparent);
+    margin: 14px 0;
+  }
+
+  /* Empty state */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 380px;
+    gap: 20px;
+    animation: fade-in 0.5s ease;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .empty-icon {
+    width: 64px;
+    height: 64px;
+    opacity: 0.2;
+  }
+
+  .empty-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .empty-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .ws-url {
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* Connecting animation */
+  .connecting {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .connecting span {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    animation: bounce 1.2s infinite ease-in-out both;
+  }
+
+  .connecting span:nth-child(2) { animation-delay: 0.2s; }
+  .connecting span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  /* Rank colors */
+  .rank-iron { color: var(--iron); }
+  .rank-bronze { color: var(--bronze); }
+  .rank-silver { color: var(--silver); }
+  .rank-gold { color: var(--gold-rank); }
+  .rank-platinum { color: var(--platinum); }
+  .rank-diamond { color: var(--diamond); }
+  .rank-ascendant { color: var(--ascendant); }
+  .rank-immortal { color: var(--immortal); }
+  .rank-radiant { color: var(--radiant); text-shadow: 0 0 8px rgba(255,253,205,0.4); }
+  .rank-unranked { color: var(--text-dim); }
+
+  /* Level colors */
+  .level-100 { color: #d3d3d3; border-color: #333; }
+  .level-200 { color: #4747cc; border-color: #4747cc55; }
+  .level-300 { color: #cfcf4c; border-color: #cfcf4c55; }
+  .level-400 { color: #66d4d4; border-color: #66d4d455; }
+
+  /* Error toast */
+  .error-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: rgba(255,70,85,0.1);
+    border: 1px solid rgba(255,70,85,0.4);
+    color: #ff8591;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: 'Share Tech Mono', monospace;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 200;
+  }
+
+  .error-toast.show { opacity: 1; }
+
+  /* Column headers */
+  .col-headers {
+    display: grid;
+    grid-template-columns: 52px 1fr 200px 140px 140px 100px 80px;
+    padding: 0 0 4px 0;
+    gap: 0;
+  }
+
+  .col-header {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-dim);
+    font-weight: 600;
+    padding: 0 12px;
+  }
+
+  .col-header:first-child { padding-left: 0; }
+
+  /* WR chip */
+  .wr-chip {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 32 32" fill="none">
+        <polygon points="16,2 30,28 2,28" fill="none" stroke="#ff4655" stroke-width="2"/>
+        <line x1="16" y1="10" x2="16" y2="22" stroke="#ff4655" stroke-width="1.5"/>
+        <circle cx="16" cy="24" r="1.5" fill="#ff4655"/>
+      </svg>
+    </div>
+    <div class="logo-text">VRY<span>.</span></div>
+  </div>
+
+  <div class="header-right">
+    <div class="status-label">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">CONNECTING</span>
+    </div>
+    <div id="mapInfo" class="map-info" style="display:none;"></div>
+    <div id="stateBadge" class="state-badge waiting">WAITING</div>
+  </div>
+</header>
+
+<main class="main">
+  <div id="app"></div>
+</main>
+
+<div class="error-toast" id="errorToast"></div>
+
+<script>
+const RANKS = [
+  'Unranked','Unranked','Unranked',
+  'Iron 1','Iron 2','Iron 3',
+  'Bronze 1','Bronze 2','Bronze 3',
+  'Silver 1','Silver 2','Silver 3',
+  'Gold 1','Gold 2','Gold 3',
+  'Platinum 1','Platinum 2','Platinum 3',
+  'Diamond 1','Diamond 2','Diamond 3',
+  'Ascendant 1','Ascendant 2','Ascendant 3',
+  'Immortal 1','Immortal 2','Immortal 3',
+  'Radiant'
+];
+
+function getRankClass(rank) {
+  if (rank <= 2) return 'rank-unranked';
+  if (rank <= 5) return 'rank-iron';
+  if (rank <= 8) return 'rank-bronze';
+  if (rank <= 11) return 'rank-silver';
+  if (rank <= 14) return 'rank-gold';
+  if (rank <= 17) return 'rank-platinum';
+  if (rank <= 20) return 'rank-diamond';
+  if (rank <= 23) return 'rank-ascendant';
+  if (rank <= 26) return 'rank-immortal';
+  if (rank === 27) return 'rank-radiant';
+  return 'rank-unranked';
+}
+
+function getHSColor(hs) {
+  if (hs === 'N/A' || hs === null || hs === undefined) return '#5a607a';
+  const n = parseInt(hs);
+  if (isNaN(n)) return '#5a607a';
+  if (n >= 30) return '#12cc19';
+  if (n >= 20) return '#c5ba3f';
+  if (n >= 10) return '#bb8f5a';
+  return '#dd4444';
+}
+
+function getRRChangeClass(val) {
+  if (val === 'N/A' || val === null || val === undefined) return 'na';
+  const n = parseInt(val);
+  if (isNaN(n)) return 'na';
+  if (n > 0) return 'positive';
+  if (n < 0) return 'negative';
+  return 'zero';
+}
+
+function formatRRChange(val) {
+  if (val === 'N/A' || val === null || val === undefined) return 'N/A';
+  const n = parseInt(val);
+  if (isNaN(n)) return 'N/A';
+  if (n > 0) return `+${n}`;
+  return `${n}`;
+}
+
+function getLevelClass(level) {
+  if (!level) return 'level-100';
+  if (level >= 400) return 'level-400';
+  if (level >= 300) return 'level-300';
+  if (level >= 200) return 'level-200';
+  return 'level-100';
+}
+
+const PARTY_COLORS = [
+  '#e34343','#d843e3','#4346e3','#43e3d0','#5ee343','#e2ed39','#d452cf','#aaaaaa'
+];
+
+let state = {
+  gameState: null,
+  players: {},
+  selfPuuid: null,
+  map: null,
+  agentImages: {},
+  agentNames: {},
+};
+
+// Try to extract agent image links from matchLoadout payloads
+function applyLoadoutData(data) {
+  if (!data || !data.Players) return;
+  Object.entries(data.Players).forEach(([puuid, pdata]) => {
+    if (pdata.Agent) state.agentImages[puuid] = pdata.Agent;
+    if (pdata.Name) state.agentNames[puuid] = pdata.Name;
+  });
+}
+
+function renderTeam(players, teamId, gameState) {
+  if (!players || players.length === 0) return '';
+  const label = teamId === 'Blue' ? 'Attack' : 'Defense';
+  const labelClass = teamId === 'Blue' ? 'blue' : 'red';
+
+  const cards = players.map((p, idx) => renderCard(p, idx)).join('');
+  return `
+    <div class="team-section">
+      <div class="team-label ${labelClass}">${label}</div>
+      <div class="players-grid">${cards}</div>
+    </div>
+  `;
+}
+
+function renderCard(p, idx) {
+  const isSelf = p.puuid === state.selfPuuid;
+  const team = p.team || 'Blue';
+  const nameClass = isSelf ? 'self-color' : (team === 'Blue' ? 'blue' : 'red');
+
+  const rankIdx = Math.min(Math.max(p.rank || 0, 0), 27);
+  const peakIdx = Math.min(Math.max(p.peakRank || 0, 0), 27);
+  const rankName = RANKS[rankIdx];
+  const peakName = RANKS[peakIdx];
+  const rankClass = getRankClass(rankIdx);
+  const peakClass = getRankClass(peakIdx);
+
+  const hsVal = p.headshotPercentage;
+  const hsNum = parseInt(hsVal);
+  const hsDisplay = (hsVal === 'N/A' || isNaN(hsNum)) ? 'N/A' : `${hsNum}%`;
+  const hsColor = getHSColor(hsVal);
+  const hsBarWidth = isNaN(hsNum) ? 0 : Math.min(hsNum * 2, 100);
+
+  // RR from last game (RankedRatingEarned via winPercentage field isn't it - it's in the heartbeat data)
+  const rrChange = p.rr_change;
+  const rrChangeClass = getRRChangeClass(rrChange);
+  const rrChangeText = formatRRChange(rrChange);
+
+  const currentRR = p.rr !== undefined ? p.rr : '—';
+  const lvl = p.level || '?';
+  const lvlClass = getLevelClass(p.level);
+
+  // Agent image
+  const agentImg = state.agentImages[p.puuid] || p.agentImgLink;
+  const agentDisplayName = p.agent || state.agentNames[p.puuid] || '?';
+
+  const agentCell = agentImg
+    ? `<img class="agent-icon" src="${agentImg}" alt="${agentDisplayName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+       <div class="agent-fallback" style="display:none">${agentDisplayName.charAt(0)}</div>`
+    : `<div class="agent-fallback">${agentDisplayName !== '?' ? agentDisplayName.charAt(0) : '?'}</div>`;
+
+  const partyDot = p.partyNumber > 0
+    ? `<span class="party-icon" style="background:${PARTY_COLORS[(p.partyNumber - 1) % PARTY_COLORS.length]}"></span>`
+    : '';
+
+  const peakActStr = p.peakRankAct ? `<span style="color:var(--text-dim);font-size:10px"> ${p.peakRankAct}</span>` : '';
+
+  const animDelay = idx * 0.04;
+
+  // Win percentage
+  const wp = p.winPercentage || '';
+  const wpDisplay = wp ? `<div class="wr-chip">${wp}</div>` : '';
+
+  return `
+    <div class="player-card${isSelf ? ' self' : ''}" style="animation-delay:${animDelay}s">
+      <div class="agent-cell">${agentCell}</div>
+
+      <div class="name-cell">
+        <div class="player-name ${nameClass}">${partyDot}${escHtml(p.name || 'Unknown')}</div>
+        <div class="agent-name">${escHtml(agentDisplayName)}</div>
+      </div>
+
+      <div class="rank-cell">
+        <div class="rank-name ${rankClass}">${rankName}</div>
+        <div class="rr-value">${currentRR} RR</div>
+        ${wpDisplay}
+      </div>
+
+      <div class="peak-cell">
+        <div class="peak-label">Peak</div>
+        <div class="peak-name ${peakClass}">${peakName}${peakActStr}</div>
+      </div>
+
+      <div class="hs-cell">
+        <div class="hs-label">HS%</div>
+        <div class="hs-value" style="color:${hsColor}">${hsDisplay}</div>
+        <div class="hs-bar"><div class="hs-bar-fill" style="width:${hsBarWidth}%;background:${hsColor}"></div></div>
+      </div>
+
+      <div class="rr-cell">
+        <div class="rr-label">Last RR</div>
+        <div class="rr-change ${rrChangeClass}">${rrChangeText}</div>
+      </div>
+
+      <div class="level-cell">
+        <div class="level-badge ${lvlClass}">${lvl}</div>
+      </div>
+    </div>
+  `;
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function renderHeaders() {
+  return `
+    <div class="col-headers">
+      <div class="col-header"></div>
+      <div class="col-header">Player</div>
+      <div class="col-header">Current Rank</div>
+      <div class="col-header">Peak Rank</div>
+      <div class="col-header" style="text-align:center">Headshot %</div>
+      <div class="col-header" style="text-align:center">Last Game RR</div>
+      <div class="col-header" style="text-align:center">Level</div>
+    </div>
+  `;
+}
+
+function render() {
+  const app = document.getElementById('app');
+  const playerList = Object.values(state.players);
+
+  if (!state.gameState || playerList.length === 0) {
+    app.innerHTML = `
+      <div class="empty-state">
+        <svg class="empty-icon" viewBox="0 0 64 64" fill="none">
+          <rect x="8" y="8" width="48" height="48" rx="4" stroke="#5a607a" stroke-width="2"/>
+          <path d="M24 32h16M32 24v16" stroke="#5a607a" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <div class="empty-title">Awaiting Match</div>
+        <div class="empty-sub">
+          Connecting to vRY on <span class="ws-url">ws://localhost:1100</span><br>
+          Make sure VALORANT and vRY are running.
+          <br><br>
+          <div class="connecting"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Separate by team
+  const bluePlayers = playerList.filter(p => p.team === 'Blue');
+  const redPlayers = playerList.filter(p => p.team === 'Red');
+  const noTeam = playerList.filter(p => !p.team);
+
+  let html = renderHeaders();
+
+  if (bluePlayers.length > 0 && redPlayers.length > 0) {
+    html += renderTeam(bluePlayers, 'Blue', state.gameState);
+    html += '<div class="team-divider"></div>';
+    html += renderTeam(redPlayers, 'Red', state.gameState);
+  } else if (noTeam.length > 0) {
+    // MENUS or PREGAME (only allies visible)
+    html += `<div class="team-section"><div class="team-label blue">Your Party / Allies</div><div class="players-grid">${noTeam.map((p, i) => renderCard(p, i)).join('')}</div></div>`;
+  } else {
+    // Only one team visible
+    const visible = [...bluePlayers, ...redPlayers];
+    html += `<div class="team-section"><div class="players-grid">${visible.map((p, i) => renderCard(p, i)).join('')}</div></div>`;
+  }
+
+  app.innerHTML = html;
+}
+
+function updateStateBadge(gs) {
+  const badge = document.getElementById('stateBadge');
+  const map = document.getElementById('mapInfo');
+  badge.className = 'state-badge';
+  if (!gs) {
+    badge.className += ' waiting';
+    badge.textContent = 'WAITING';
+    return;
+  }
+  const labels = { INGAME: 'IN-GAME', PREGAME: 'AGENT SELECT', MENUS: 'IN-MENUS' };
+  const cls = { INGAME: 'ingame', PREGAME: 'pregame', MENUS: 'menus' };
+  badge.className += ` ${cls[gs] || 'waiting'}`;
+  badge.textContent = labels[gs] || gs;
+
+  if (state.map) {
+    map.textContent = state.map;
+    map.style.display = '';
+  } else {
+    map.style.display = 'none';
+  }
+}
+
+function setConnected(ok) {
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  dot.className = 'status-dot ' + (ok ? 'connected' : 'error');
+  txt.textContent = ok ? 'LIVE' : 'DISCONNECTED';
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+// Process heartbeat
+function handleHeartbeat(data) {
+  state.gameState = data.state;
+  state.selfPuuid = data.puuid;
+  state.map = data.map && Array.isArray(data.map) ? data.map[0] : data.map;
+
+  const newPlayers = {};
+  Object.entries(data.players || {}).forEach(([puuid, p]) => {
+    // Parse RR change out of winPercentage string isn't right — it's in a separate field
+    // The heartbeat doesn't directly give rr_change (RankedRatingEarned), so we track it separately
+    const existing = state.players[puuid] || {};
+    newPlayers[puuid] = {
+      ...existing,
+      puuid,
+      name: p.name,
+      team: p.team,
+      agent: p.agent,
+      rank: p.rank,
+      peakRank: p.peakRank,
+      peakRankAct: p.peakRankAct,
+      rr: p.rr,
+      headshotPercentage: p.headshotPercentage,
+      winPercentage: p.winPercentage,
+      level: p.level,
+      partyNumber: p.partyNumber || 0,
+      agentImgLink: p.agentImgLink || existing.agentImgLink,
+      rr_change: existing.rr_change, // preserved from matchLoadout
+    };
+  });
+
+  state.players = newPlayers;
+  updateStateBadge(state.gameState);
+  render();
+}
+
+// Process matchLoadout - extract agent images and RR change data
+function handleMatchLoadout(data) {
+  if (!data || !data.Players) return;
+  Object.entries(data.Players).forEach(([puuid, pdata]) => {
+    if (!state.players[puuid]) state.players[puuid] = { puuid };
+    if (pdata.Agent) {
+      state.agentImages[puuid] = pdata.Agent;
+      state.players[puuid].agentImgLink = pdata.Agent;
+    }
+  });
+  // Re-render to update agent images
+  render();
+}
+
+// WebSocket connection with reconnect
+let ws = null;
+let reconnectTimer = null;
+let reconnectDelay = 2000;
+
+function connect() {
+  try {
+    ws = new WebSocket('ws://localhost:1100');
+  } catch (e) {
+    scheduleReconnect();
+    return;
+  }
+
+  ws.onopen = () => {
+    setConnected(true);
+    reconnectDelay = 2000;
+    clearTimeout(reconnectTimer);
+  };
+
+  ws.onmessage = (evt) => {
+    try {
+      const msg = JSON.parse(evt.data);
+      if (msg.type === 'heartbeat') handleHeartbeat(msg);
+      else if (msg.type === 'matchLoadout') handleMatchLoadout(msg);
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  ws.onclose = () => {
+    setConnected(false);
+    scheduleReconnect();
+  };
+
+  ws.onerror = () => {
+    setConnected(false);
+    ws.close();
+  };
+}
+
+function scheduleReconnect() {
+  clearTimeout(reconnectTimer);
+  reconnectTimer = setTimeout(() => {
+    connect();
+    reconnectDelay = Math.min(reconnectDelay * 1.5, 15000);
+  }, reconnectDelay);
+}
+
+// Initial render (empty state)
+render();
+connect();
+</script>
+</body>
+</html>
