@@ -30,6 +30,7 @@
     color: var(--text);
     min-height: 100vh;
     overflow-x: hidden;
+    zoom: 1.18;
   }
 
   body::before {
@@ -123,7 +124,7 @@
   .team-divider { height:1px; background:linear-gradient(90deg,transparent,var(--border-bright),transparent); margin:12px 0; }
   .players-grid { display:flex; flex-direction:column; gap:3px; }
 
-  /* Grid: agent(52) | name(1fr) | current rank(185) | peak rank(185) | HS(90) | LastRR(80) | Level(70) */
+  /* Grid: agent(52) | name(1fr) | current rank(185) | peak rank(185) | HS(90) | WinRate(80) | Level(70) */
   .col-headers,
   .player-card {
     display: grid;
@@ -210,13 +211,9 @@
   .hs-bar { width:50px; height:2px; background:var(--border); border-radius:1px; overflow:hidden; margin-top:2px; }
   .hs-bar-fill { height:100%; border-radius:1px; transition:width .6s ease; }
 
-  /* Last RR */
-  .rr-cell { padding:0 10px; display:flex; flex-direction:column; align-items:center; gap:1px; }
-  .rr-change { font-family:'Share Tech Mono',monospace; font-size:15px; font-weight:700; }
-  .rr-change.pos  { color:var(--green); }
-  .rr-change.neg  { color:var(--red); }
-  .rr-change.zero { color:var(--text-muted); }
-  .rr-change.na   { color:var(--text-dim); }
+  /* Win Rate */
+  .wr-cell { padding:0 10px; display:flex; flex-direction:column; align-items:center; gap:1px; }
+  .wr-value { font-family:'Share Tech Mono',monospace; font-size:15px; font-weight:700; color:var(--text-muted); }
 
   /* Level */
   .level-cell { padding:0 10px; display:flex; align-items:center; justify-content:center; }
@@ -329,8 +326,6 @@ function hsColor(hs) {
   return '#dd4444';
 }
 
-function rrClass(v)  { const n=parseInt(v); return isNaN(n)?'na':n>0?'pos':n<0?'neg':'zero'; }
-function rrText(v)   { const n=parseInt(v); return isNaN(n)?'N/A':n>0?`+${n}`:`${n}`; }
 function lvlClass(l) { return l>=400?'lv-400':l>=300?'lv-300':l>=200?'lv-200':'lv-1'; }
 
 // ── Rank block (icon + name + sub-line) ───────────────────────────────────────
@@ -384,6 +379,9 @@ function renderCard(p, idx) {
   const hsClr = hsColor(p.headshotPercentage);
   const hsBar = isNaN(hsNum) ? 0 : Math.min(hsNum * 2, 100);
 
+  // Win Rate
+  const wr = p.winPercentage !== undefined ? p.winPercentage : 'N/A';
+
   return `
     <div class="player-card${isSelf?' self':''}" style="animation-delay:${idx*.04}s">
       <div class="agent-cell">${agentCell}</div>
@@ -402,9 +400,9 @@ function renderCard(p, idx) {
         <div class="hs-bar"><div class="hs-bar-fill" style="width:${hsBar}%;background:${hsClr}"></div></div>
       </div>
 
-      <div class="rr-cell">
-        <div class="cell-label">Last RR</div>
-        <div class="rr-change ${rrClass(p.rr_change)}">${rrText(p.rr_change)}</div>
+      <div class="wr-cell">
+        <div class="cell-label">Win Rate</div>
+        <div class="wr-value">${esc(String(wr))}</div>
       </div>
 
       <div class="level-cell">
@@ -432,7 +430,7 @@ function renderHeaders() {
       <div class="col-header">Current Rank</div>
       <div class="col-header">Peak Rank</div>
       <div class="col-header center">HS%</div>
-      <div class="col-header center">Last RR</div>
+      <div class="col-header center">Win Rate</div>
       <div class="col-header center">Level</div>
     </div>`;
 }
@@ -534,7 +532,6 @@ function handleHeartbeat(data) {
       level:              p.level,
       partyNumber:        p.partyNumber || 0,
       agentImgLink:       p.agentImgLink || prev.agentImgLink,
-      rr_change:          prev.rr_change,
     };
   });
   STATE.players = next;
