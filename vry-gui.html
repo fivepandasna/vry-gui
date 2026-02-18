@@ -124,11 +124,11 @@
   .team-divider { height:1px; background:linear-gradient(90deg,transparent,var(--border-bright),transparent); margin:12px 0; }
   .players-grid { display:flex; flex-direction:column; gap:3px; }
 
-  /* Grid: agent(52) | name(1fr) | current rank(185) | peak rank(185) | HS(90) | WinRate(80) | Level(70) */
+  /* Grid: agent(52) | name(1fr) | current rank(185) | peak rank(185) | KD(70) | HS(90) | WinRate(80) | Level(70) */
   .col-headers,
   .player-card {
     display: grid;
-    grid-template-columns: 52px minmax(130px,1fr) 185px 185px 90px 80px 70px;
+    grid-template-columns: 52px minmax(130px,1fr) 185px 185px 70px 90px 80px 70px;
     align-items: center;
   }
 
@@ -204,16 +204,35 @@
   .rc-immortal  { color: #dd4444; }
   .rc-radiant   { color: #fffdc8; text-shadow:0 0 8px rgba(255,253,200,.35); }
 
-  /* HS */
-  .hs-cell { padding:0 10px; display:flex; flex-direction:column; align-items:center; gap:2px; }
+  /* ── Stat cells (HS, WR, KD) — shared structure ── */
+  .hs-cell,
+  .wr-cell,
+  .kd-cell {
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
   .cell-label { font-size:9px; text-transform:uppercase; letter-spacing:.12em; color:var(--text-dim); font-weight:600; }
-  .hs-value { font-family:'Share Tech Mono',monospace; font-size:15px; font-weight:600; }
-  .hs-bar { width:50px; height:2px; background:var(--border); border-radius:1px; overflow:hidden; margin-top:2px; }
+
+  /* Value row: fixed height so label + value always sit at same vertical position */
+  .stat-value-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    height: 24px;
+    justify-content: flex-start;
+    padding-top: 4px;
+  }
+
+  .hs-value { font-family:'Share Tech Mono',monospace; font-size:15px; font-weight:600; line-height:1; }
+  .hs-bar { width:50px; height:2px; background:var(--border); border-radius:1px; overflow:hidden; margin-top: 3px; }
   .hs-bar-fill { height:100%; border-radius:1px; transition:width .6s ease; }
 
-  /* Win Rate */
-  .wr-cell { padding:0 10px; display:flex; flex-direction:column; align-items:center; gap:1px; }
-  .wr-value { font-family:'Share Tech Mono',monospace; font-size:15px; font-weight:700; color:var(--text-muted); }
+  .wr-value { font-family:'Share Tech Mono',monospace; font-size:15px; font-weight:700; color:var(--text-muted); line-height:1; }
+  .kd-value { font-family:'Share Tech Mono',monospace; font-size:15px; font-weight:700; line-height:1; }
 
   /* Level */
   .level-cell { padding:0 10px; display:flex; align-items:center; justify-content:center; }
@@ -291,14 +310,12 @@ const RANK_CSS = [
 
 const PARTY_COLORS = ['#e34343','#d843e3','#4346e3','#43e3d0','#5ee343','#e2ed39','#d452cf','#aaaaaa'];
 
-// tier index → icon URL (populated from valorant-api.com)
 const RANK_ICONS = {};
 
 async function loadRankIcons() {
   try {
     const res  = await fetch('https://valorant-api.com/v1/competitivetiers');
     const json = await res.json();
-    // last entry = most recent episode's tier table
     const latest = json.data[json.data.length - 1];
     latest.tiers.forEach(t => {
       if (t.smallIcon) RANK_ICONS[t.tier] = t.smallIcon;
@@ -323,6 +340,15 @@ function hsColor(hs) {
   if (n >= 30) return '#12cc19';
   if (n >= 20) return '#c5ba3f';
   if (n >= 10) return '#bb8f5a';
+  return '#dd4444';
+}
+
+function kdColor(kd) {
+  const n = parseFloat(kd);
+  if (isNaN(n)) return '#5a607a';
+  if (n >= 1.5) return '#12cc19';
+  if (n >= 1.0) return '#c5ba3f';
+  if (n >= 0.7) return '#bb8f5a';
   return '#dd4444';
 }
 
@@ -368,10 +394,10 @@ function renderCard(p, idx) {
     ? `<span class="party-dot" style="background:${PARTY_COLORS[(p.partyNumber-1)%PARTY_COLORS.length]}"></span>`
     : '';
 
-  // Current rank: show "XX RR" under rank name
+  // Current rank
   const currentRank = rankBlock(p.rank, p.rr !== undefined ? `${p.rr} RR` : '', '');
 
-  // Peak rank: show act/ep tag under rank name
+  // Peak rank
   const peakRank = rankBlock(p.peakRank, p.peakRankAct || '', 'dim');
 
   // HS
@@ -381,6 +407,13 @@ function renderCard(p, idx) {
 
   // Win Rate
   const wr = p.winPercentage !== undefined ? p.winPercentage : 'N/A';
+
+  // K/D
+  const kdVal = p.kd !== undefined ? p.kd : 'N/A';
+  const kdClr = kdColor(kdVal);
+  const kdDisplay = (kdVal !== 'N/A' && !isNaN(parseFloat(kdVal)))
+    ? parseFloat(kdVal).toFixed(2)
+    : 'N/A';
 
   return `
     <div class="player-card${isSelf?' self':''}" style="animation-delay:${idx*.04}s">
@@ -394,15 +427,26 @@ function renderCard(p, idx) {
       ${currentRank}
       ${peakRank}
 
+      <div class="kd-cell">
+        <div class="cell-label">K/D</div>
+        <div class="stat-value-row">
+          <div class="kd-value" style="color:${kdClr}">${esc(kdDisplay)}</div>
+        </div>
+      </div>
+
       <div class="hs-cell">
         <div class="cell-label">HS%</div>
-        <div class="hs-value" style="color:${hsClr}">${isNaN(hsNum)?'N/A':hsNum+'%'}</div>
-        <div class="hs-bar"><div class="hs-bar-fill" style="width:${hsBar}%;background:${hsClr}"></div></div>
+        <div class="stat-value-row">
+          <div class="hs-value" style="color:${hsClr}">${isNaN(hsNum)?'N/A':hsNum+'%'}</div>
+          <div class="hs-bar"><div class="hs-bar-fill" style="width:${hsBar}%;background:${hsClr}"></div></div>
+        </div>
       </div>
 
       <div class="wr-cell">
         <div class="cell-label">Win Rate</div>
-        <div class="wr-value">${esc(String(wr))}</div>
+        <div class="stat-value-row">
+          <div class="wr-value">${esc(String(wr))}</div>
+        </div>
       </div>
 
       <div class="level-cell">
@@ -429,6 +473,7 @@ function renderHeaders() {
       <div class="col-header">Player</div>
       <div class="col-header">Current Rank</div>
       <div class="col-header">Peak Rank</div>
+      <div class="col-header center">K/D</div>
       <div class="col-header center">HS%</div>
       <div class="col-header center">Win Rate</div>
       <div class="col-header center">Level</div>
@@ -529,6 +574,7 @@ function handleHeartbeat(data) {
       rr:                 p.rr,
       headshotPercentage: p.headshotPercentage,
       winPercentage:      p.winPercentage,
+      kd:                 p.kd,
       level:              p.level,
       partyNumber:        p.partyNumber || 0,
       agentImgLink:       p.agentImgLink || prev.agentImgLink,
@@ -580,10 +626,10 @@ function schedule() {
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 (async () => {
-  render();        // show empty/loading state immediately
-  connect();       // start WS
-  await loadRankIcons();  // fetch rank icons in background
-  render();        // re-render once icons are ready
+  render();
+  connect();
+  await loadRankIcons();
+  render();
 })();
 </script>
 </body>
