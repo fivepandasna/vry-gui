@@ -14,24 +14,12 @@
     --border: #1e2333;
     --border-bright: #2a3050;
     --accent: #ff4655;
-    --accent2: #bd3944;
-    --gold: #c8b862;
     --text: #d4d8e8;
     --text-dim: #5a607a;
     --text-muted: #8890ab;
     --blue: #4c97ed;
     --red: #ee4d4d;
     --green: #12cc19;
-    --teal: #18a452;
-    --iron: #484542;
-    --bronze: #bb8f5a;
-    --silver: #aeb2b2;
-    --gold-rank: #c5ba3f;
-    --platinum: #18a7b9;
-    --diamond: #d864c7;
-    --ascendant: #18a452;
-    --immortal: #dd4444;
-    --radiant: #fffdcd;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -44,28 +32,21 @@
     overflow-x: hidden;
   }
 
-  /* Scanline overlay */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.03) 2px,
-      rgba(0,0,0,0.03) 4px
-    );
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
     pointer-events: none;
     z-index: 999;
   }
 
-  /* Header */
+  /* ── Header ── */
   .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 18px 32px;
+    padding: 16px 28px;
     border-bottom: 1px solid var(--border);
     background: var(--surface);
     position: sticky;
@@ -73,65 +54,12 @@
     z-index: 100;
   }
 
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo svg { width: 28px; height: 28px; }
+  .logo-text { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.12em; color: #fff; }
+  .logo-text span { color: var(--accent); }
 
-  .logo-icon {
-    width: 32px;
-    height: 32px;
-    position: relative;
-  }
-
-  .logo-icon svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  .logo-text {
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    font-size: 22px;
-    letter-spacing: 0.12em;
-    color: #fff;
-  }
-
-  .logo-text span {
-    color: var(--accent);
-  }
-
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-
-  .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--text-dim);
-    position: relative;
-    transition: background 0.3s;
-  }
-
-  .status-dot.connected {
-    background: var(--green);
-    box-shadow: 0 0 8px var(--green);
-    animation: pulse-dot 2s infinite;
-  }
-
-  .status-dot.error {
-    background: var(--accent);
-    box-shadow: 0 0 8px var(--accent);
-  }
-
-  @keyframes pulse-dot {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
+  .header-right { display: flex; align-items: center; gap: 16px; }
 
   .status-label {
     font-family: 'Share Tech Mono', monospace;
@@ -143,8 +71,18 @@
     gap: 6px;
   }
 
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    transition: background 0.3s, box-shadow 0.3s;
+  }
+  .status-dot.connected { background: var(--green); box-shadow: 0 0 7px var(--green); animation: pulse-dot 2s infinite; }
+  .status-dot.error     { background: var(--accent); box-shadow: 0 0 7px var(--accent); }
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.45} }
+
   .state-badge {
-    padding: 4px 12px;
+    padding: 4px 11px;
     border-radius: 2px;
     font-family: 'Rajdhani', sans-serif;
     font-weight: 600;
@@ -153,484 +91,171 @@
     text-transform: uppercase;
     border: 1px solid transparent;
   }
+  .state-badge.ingame  { background:rgba(255,70,85,.12);  border-color:rgba(255,70,85,.4);  color:#ff8591; }
+  .state-badge.pregame { background:rgba(103,237,76,.12); border-color:rgba(103,237,76,.4); color:#67ed4c; }
+  .state-badge.menus   { background:rgba(238,241,54,.10); border-color:rgba(238,241,54,.35); color:#eef136; }
+  .state-badge.waiting { background:rgba(90,96,122,.15);  border-color:rgba(90,96,122,.3);  color:var(--text-muted); }
 
-  .state-badge.ingame {
-    background: rgba(255,70,85,0.12);
-    border-color: rgba(255,70,85,0.4);
-    color: #ff8591;
-  }
+  .map-info { font-family:'Rajdhani',sans-serif; font-weight:500; font-size:13px; color:var(--text-muted); letter-spacing:.06em; }
 
-  .state-badge.pregame {
-    background: rgba(103,237,76,0.12);
-    border-color: rgba(103,237,76,0.4);
-    color: #67ed4c;
-  }
+  /* ── Layout ── */
+  .main { padding: 20px 28px; max-width: 1400px; margin: 0 auto; }
 
-  .state-badge.menus {
-    background: rgba(238,241,54,0.1);
-    border-color: rgba(238,241,54,0.35);
-    color: #eef136;
-  }
-
-  .state-badge.waiting {
-    background: rgba(90,96,122,0.15);
-    border-color: rgba(90,96,122,0.3);
-    color: var(--text-muted);
-  }
-
-  .map-info {
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 500;
-    font-size: 13px;
-    color: var(--text-muted);
-    letter-spacing: 0.06em;
-  }
-
-  /* Main content */
-  .main {
-    padding: 24px 32px;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-
-  /* Teams */
-  .teams-container {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
-
-  .team-section {
-    margin-bottom: 12px;
-  }
+  .team-section { margin-bottom: 10px; }
 
   .team-label {
     font-family: 'Rajdhani', sans-serif;
     font-weight: 600;
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    padding: 6px 0;
+    padding: 5px 0;
     margin-bottom: 4px;
     color: var(--text-dim);
     display: flex;
     align-items: center;
     gap: 8px;
   }
-
-  .team-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
+  .team-label::after { content:''; flex:1; height:1px; background:var(--border); }
   .team-label.blue { color: var(--blue); }
-  .team-label.red { color: var(--red); }
+  .team-label.red  { color: var(--red); }
 
-  /* Player cards */
-  .players-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
+  .team-divider { height:1px; background:linear-gradient(90deg,transparent,var(--border-bright),transparent); margin:12px 0; }
+  .players-grid { display:flex; flex-direction:column; gap:3px; }
 
+  /* Grid: agent(52) | name(1fr) | current rank(185) | peak rank(185) | HS(90) | LastRR(80) | Level(70) */
+  .col-headers,
   .player-card {
     display: grid;
-    grid-template-columns: 52px 1fr 200px 140px 140px 100px 80px;
-    align-items: center;
-    gap: 0;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    overflow: hidden;
-    position: relative;
-    transition: border-color 0.2s, background 0.2s;
-    animation: card-in 0.35s ease both;
-  }
-
-  .player-card:hover {
-    border-color: var(--border-bright);
-    background: var(--surface2);
-  }
-
-  @keyframes card-in {
-    from { opacity: 0; transform: translateX(-8px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-
-  .player-card.self {
-    border-left: 3px solid var(--accent);
-  }
-
-  .player-card.self::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, rgba(255,70,85,0.06) 0%, transparent 60%);
-    pointer-events: none;
-  }
-
-  /* Agent icon cell */
-  .agent-cell {
-    width: 52px;
-    height: 52px;
-    overflow: hidden;
-    position: relative;
-    flex-shrink: 0;
-  }
-
-  .agent-icon {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: top;
-    filter: brightness(0.9);
-    transition: filter 0.2s;
-  }
-
-  .player-card:hover .agent-icon { filter: brightness(1.05); }
-
-  .agent-fallback {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface2);
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    font-size: 18px;
-    color: var(--text-dim);
-  }
-
-  /* Name cell */
-  .name-cell {
-    padding: 0 14px;
-    min-width: 0;
-  }
-
-  .player-name {
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 600;
-    font-size: 15px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    letter-spacing: 0.03em;
-  }
-
-  .player-name.blue { color: var(--blue); }
-  .player-name.red { color: var(--red); }
-  .player-name.self-color { color: #dde041; }
-
-  .agent-name {
-    font-size: 11px;
-    color: var(--text-dim);
-    font-weight: 400;
-    letter-spacing: 0.05em;
-    margin-top: 1px;
-  }
-
-  /* Party icon */
-  .party-icon {
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    margin-right: 5px;
-    vertical-align: middle;
-    flex-shrink: 0;
-  }
-
-  /* Rank cell */
-  .rank-cell {
-    padding: 0 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-  }
-
-  .rank-name {
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    font-size: 13px;
-    letter-spacing: 0.05em;
-    white-space: nowrap;
-  }
-
-  .rr-value {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    color: var(--text-muted);
-  }
-
-  /* Peak rank cell */
-  .peak-cell {
-    padding: 0 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-  }
-
-  .peak-label {
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--text-dim);
-    font-weight: 500;
-  }
-
-  .peak-name {
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-  }
-
-  /* HS cell */
-  .hs-cell {
-    padding: 0 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-  }
-
-  .hs-label {
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--text-dim);
-    font-weight: 500;
-  }
-
-  .hs-value {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 15px;
-    font-weight: 600;
-  }
-
-  .hs-bar {
-    width: 60px;
-    height: 2px;
-    background: var(--border);
-    border-radius: 1px;
-    overflow: hidden;
-    margin-top: 3px;
-  }
-
-  .hs-bar-fill {
-    height: 100%;
-    border-radius: 1px;
-    transition: width 0.6s ease;
-  }
-
-  /* RR change cell */
-  .rr-cell {
-    padding: 0 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-  }
-
-  .rr-label {
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--text-dim);
-    font-weight: 500;
-  }
-
-  .rr-change {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 14px;
-    font-weight: 700;
-  }
-
-  .rr-change.positive { color: var(--green); }
-  .rr-change.negative { color: var(--red); }
-  .rr-change.zero { color: var(--text-muted); }
-  .rr-change.na { color: var(--text-dim); }
-
-  /* Level cell */
-  .level-cell {
-    padding: 0 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .level-badge {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 12px;
-    padding: 2px 7px;
-    border-radius: 2px;
-    border: 1px solid;
-  }
-
-  /* Divider between teams */
-  .team-divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border-bright), transparent);
-    margin: 14px 0;
-  }
-
-  /* Empty state */
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 380px;
-    gap: 20px;
-    animation: fade-in 0.5s ease;
-  }
-
-  @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  .empty-icon {
-    width: 64px;
-    height: 64px;
-    opacity: 0.2;
-  }
-
-  .empty-title {
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    font-size: 24px;
-    letter-spacing: 0.1em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-  }
-
-  .empty-sub {
-    font-size: 13px;
-    color: var(--text-dim);
-    text-align: center;
-    font-family: 'Share Tech Mono', monospace;
-  }
-
-  .ws-url {
-    color: var(--accent);
-    font-family: 'Share Tech Mono', monospace;
-  }
-
-  /* Connecting animation */
-  .connecting {
-    display: flex;
-    gap: 5px;
+    grid-template-columns: 52px minmax(130px,1fr) 185px 185px 90px 80px 70px;
     align-items: center;
   }
 
-  .connecting span {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--text-dim);
-    animation: bounce 1.2s infinite ease-in-out both;
-  }
-
-  .connecting span:nth-child(2) { animation-delay: 0.2s; }
-  .connecting span:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes bounce {
-    0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
-    40% { transform: scale(1); opacity: 1; }
-  }
-
-  /* Rank colors */
-  .rank-iron { color: var(--iron); }
-  .rank-bronze { color: var(--bronze); }
-  .rank-silver { color: var(--silver); }
-  .rank-gold { color: var(--gold-rank); }
-  .rank-platinum { color: var(--platinum); }
-  .rank-diamond { color: var(--diamond); }
-  .rank-ascendant { color: var(--ascendant); }
-  .rank-immortal { color: var(--immortal); }
-  .rank-radiant { color: var(--radiant); text-shadow: 0 0 8px rgba(255,253,205,0.4); }
-  .rank-unranked { color: var(--text-dim); }
-
-  /* Level colors */
-  .level-100 { color: #d3d3d3; border-color: #333; }
-  .level-200 { color: #4747cc; border-color: #4747cc55; }
-  .level-300 { color: #cfcf4c; border-color: #cfcf4c55; }
-  .level-400 { color: #66d4d4; border-color: #66d4d455; }
-
-  /* Error toast */
-  .error-toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: rgba(255,70,85,0.1);
-    border: 1px solid rgba(255,70,85,0.4);
-    color: #ff8591;
-    padding: 10px 16px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-family: 'Share Tech Mono', monospace;
-    opacity: 0;
-    transition: opacity 0.3s;
-    z-index: 200;
-  }
-
-  .error-toast.show { opacity: 1; }
-
-  /* Column headers */
-  .col-headers {
-    display: grid;
-    grid-template-columns: 52px 1fr 200px 140px 140px 100px 80px;
-    padding: 0 0 4px 0;
-    gap: 0;
-  }
-
+  /* ── Column headers ── */
+  .col-headers { padding: 0 0 4px 0; }
   .col-header {
     font-size: 9px;
     text-transform: uppercase;
     letter-spacing: 0.14em;
     color: var(--text-dim);
     font-weight: 600;
-    padding: 0 12px;
+    padding: 0 10px;
+  }
+  .col-header.center { text-align: center; }
+
+  /* ── Player card ── */
+  .player-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+    transition: border-color .2s, background .2s;
+    animation: card-in .3s ease both;
+    min-height: 54px;
+  }
+  .player-card:hover { border-color: var(--border-bright); background: var(--surface2); }
+  @keyframes card-in { from{opacity:0;transform:translateX(-6px)} to{opacity:1;transform:none} }
+
+  .player-card.self { border-left: 3px solid var(--accent); }
+  .player-card.self::before {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(90deg,rgba(255,70,85,.06) 0%,transparent 55%);
+    pointer-events:none;
   }
 
-  .col-header:first-child { padding-left: 0; }
+  /* Agent icon */
+  .agent-cell { width:52px; height:54px; overflow:hidden; flex-shrink:0; }
+  .agent-icon { width:100%; height:100%; object-fit:cover; object-position:top center; filter:brightness(.9); transition:filter .2s; }
+  .player-card:hover .agent-icon { filter:brightness(1.05); }
+  .agent-fallback { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:var(--surface2); font-family:'Rajdhani',sans-serif; font-weight:700; font-size:18px; color:var(--text-dim); }
 
-  /* WR chip */
-  .wr-chip {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    color: var(--text-dim);
-    margin-top: 2px;
-  }
+  /* Name cell */
+  .name-cell { padding:0 12px; min-width:0; }
+  .player-name { font-family:'Rajdhani',sans-serif; font-weight:600; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:.03em; }
+  .player-name.blue       { color: var(--blue); }
+  .player-name.red        { color: var(--red); }
+  .player-name.self-color { color: #dde041; }
+  .agent-sub { font-size:11px; color:var(--text-dim); font-weight:400; letter-spacing:.05em; margin-top:1px; }
+  .party-dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:4px; vertical-align:middle; }
+
+  /* Rank cell — shared by current & peak */
+  .rank-cell { padding:0 10px; display:flex; align-items:center; gap:9px; min-width:0; }
+
+  .rank-icon-wrap { width:38px; height:38px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .rank-icon { width:38px; height:38px; object-fit:contain; filter:drop-shadow(0 1px 4px rgba(0,0,0,.55)); }
+  .rank-icon-placeholder { width:34px; height:34px; border-radius:50%; background:var(--border); border:1px solid var(--border-bright); }
+
+  .rank-text { display:flex; flex-direction:column; gap:2px; min-width:0; overflow:hidden; }
+  .rank-name-text { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; letter-spacing:.04em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .rank-sub { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--text-muted); white-space:nowrap; }
+  .rank-sub.dim { color:var(--text-dim); }
+
+  /* rank name colours */
+  .rc-unranked  { color: #5a607a; }
+  .rc-iron      { color: #706d68; }
+  .rc-bronze    { color: #bb8f5a; }
+  .rc-silver    { color: #aeb2b2; }
+  .rc-gold      { color: #c5ba3f; }
+  .rc-platinum  { color: #18a7b9; }
+  .rc-diamond   { color: #d864c7; }
+  .rc-ascendant { color: #18a452; }
+  .rc-immortal  { color: #dd4444; }
+  .rc-radiant   { color: #fffdc8; text-shadow:0 0 8px rgba(255,253,200,.35); }
+
+  /* HS */
+  .hs-cell { padding:0 10px; display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .cell-label { font-size:9px; text-transform:uppercase; letter-spacing:.12em; color:var(--text-dim); font-weight:600; }
+  .hs-value { font-family:'Share Tech Mono',monospace; font-size:15px; font-weight:600; }
+  .hs-bar { width:50px; height:2px; background:var(--border); border-radius:1px; overflow:hidden; margin-top:2px; }
+  .hs-bar-fill { height:100%; border-radius:1px; transition:width .6s ease; }
+
+  /* Last RR */
+  .rr-cell { padding:0 10px; display:flex; flex-direction:column; align-items:center; gap:1px; }
+  .rr-change { font-family:'Share Tech Mono',monospace; font-size:15px; font-weight:700; }
+  .rr-change.pos  { color:var(--green); }
+  .rr-change.neg  { color:var(--red); }
+  .rr-change.zero { color:var(--text-muted); }
+  .rr-change.na   { color:var(--text-dim); }
+
+  /* Level */
+  .level-cell { padding:0 10px; display:flex; align-items:center; justify-content:center; }
+  .level-badge { font-family:'Share Tech Mono',monospace; font-size:12px; padding:2px 7px; border-radius:2px; border:1px solid; }
+  .lv-1   { color:#d3d3d3; border-color:#333; }
+  .lv-200 { color:#4747cc; border-color:#4747cc55; }
+  .lv-300 { color:#cfcf4c; border-color:#cfcf4c55; }
+  .lv-400 { color:#66d4d4; border-color:#66d4d455; }
+
+  /* Empty state */
+  .empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:360px; gap:18px; animation:fade-in .5s ease; }
+  @keyframes fade-in { from{opacity:0} to{opacity:1} }
+  .empty-icon { width:56px; height:56px; opacity:.18; }
+  .empty-title { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:22px; letter-spacing:.1em; color:var(--text-dim); text-transform:uppercase; }
+  .empty-sub { font-size:13px; color:var(--text-dim); text-align:center; font-family:'Share Tech Mono',monospace; line-height:1.7; }
+  .ws-url { color:var(--accent); }
+  .connecting { display:flex; gap:5px; align-items:center; margin-top:6px; justify-content:center; }
+  .connecting span { width:4px; height:4px; border-radius:50%; background:var(--text-dim); animation:bounce 1.2s infinite ease-in-out both; }
+  .connecting span:nth-child(2){animation-delay:.2s} .connecting span:nth-child(3){animation-delay:.4s}
+  @keyframes bounce { 0%,80%,100%{transform:scale(.7);opacity:.4} 40%{transform:scale(1);opacity:1} }
 </style>
 </head>
 <body>
 
 <header class="header">
   <div class="logo">
-    <div class="logo-icon">
-      <svg viewBox="0 0 32 32" fill="none">
-        <polygon points="16,2 30,28 2,28" fill="none" stroke="#ff4655" stroke-width="2"/>
-        <line x1="16" y1="10" x2="16" y2="22" stroke="#ff4655" stroke-width="1.5"/>
-        <circle cx="16" cy="24" r="1.5" fill="#ff4655"/>
-      </svg>
-    </div>
+    <svg viewBox="0 0 28 28" fill="none">
+      <polygon points="14,2 26,26 2,26" fill="none" stroke="#ff4655" stroke-width="2"/>
+      <line x1="14" y1="10" x2="14" y2="20" stroke="#ff4655" stroke-width="1.5"/>
+      <circle cx="14" cy="22.5" r="1.4" fill="#ff4655"/>
+    </svg>
     <div class="logo-text">VRY<span>.</span></div>
   </div>
-
   <div class="header-right">
     <div class="status-label">
       <div class="status-dot" id="statusDot"></div>
       <span id="statusText">CONNECTING</span>
     </div>
-    <div id="mapInfo" class="map-info" style="display:none;"></div>
+    <div id="mapInfo" class="map-info" style="display:none"></div>
     <div id="stateBadge" class="state-badge waiting">WAITING</div>
   </div>
 </header>
@@ -639,10 +264,9 @@
   <div id="app"></div>
 </main>
 
-<div class="error-toast" id="errorToast"></div>
-
 <script>
-const RANKS = [
+// ── Constants ─────────────────────────────────────────────────────────────────
+const RANK_NAMES = [
   'Unranked','Unranked','Unranked',
   'Iron 1','Iron 2','Iron 3',
   'Bronze 1','Bronze 2','Bronze 3',
@@ -655,22 +279,48 @@ const RANKS = [
   'Radiant'
 ];
 
-function getRankClass(rank) {
-  if (rank <= 2) return 'rank-unranked';
-  if (rank <= 5) return 'rank-iron';
-  if (rank <= 8) return 'rank-bronze';
-  if (rank <= 11) return 'rank-silver';
-  if (rank <= 14) return 'rank-gold';
-  if (rank <= 17) return 'rank-platinum';
-  if (rank <= 20) return 'rank-diamond';
-  if (rank <= 23) return 'rank-ascendant';
-  if (rank <= 26) return 'rank-immortal';
-  if (rank === 27) return 'rank-radiant';
-  return 'rank-unranked';
+const RANK_CSS = [
+  'rc-unranked','rc-unranked','rc-unranked',
+  'rc-iron','rc-iron','rc-iron',
+  'rc-bronze','rc-bronze','rc-bronze',
+  'rc-silver','rc-silver','rc-silver',
+  'rc-gold','rc-gold','rc-gold',
+  'rc-platinum','rc-platinum','rc-platinum',
+  'rc-diamond','rc-diamond','rc-diamond',
+  'rc-ascendant','rc-ascendant','rc-ascendant',
+  'rc-immortal','rc-immortal','rc-immortal',
+  'rc-radiant'
+];
+
+const PARTY_COLORS = ['#e34343','#d843e3','#4346e3','#43e3d0','#5ee343','#e2ed39','#d452cf','#aaaaaa'];
+
+// tier index → icon URL (populated from valorant-api.com)
+const RANK_ICONS = {};
+
+async function loadRankIcons() {
+  try {
+    const res  = await fetch('https://valorant-api.com/v1/competitivetiers');
+    const json = await res.json();
+    // last entry = most recent episode's tier table
+    const latest = json.data[json.data.length - 1];
+    latest.tiers.forEach(t => {
+      if (t.smallIcon) RANK_ICONS[t.tier] = t.smallIcon;
+    });
+  } catch (e) {
+    console.warn('Could not load rank icons from valorant-api.com:', e);
+  }
 }
 
-function getHSColor(hs) {
-  if (hs === 'N/A' || hs === null || hs === undefined) return '#5a607a';
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n|0)); }
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function hsColor(hs) {
   const n = parseInt(hs);
   if (isNaN(n)) return '#5a607a';
   if (n >= 30) return '#12cc19';
@@ -679,159 +329,99 @@ function getHSColor(hs) {
   return '#dd4444';
 }
 
-function getRRChangeClass(val) {
-  if (val === 'N/A' || val === null || val === undefined) return 'na';
-  const n = parseInt(val);
-  if (isNaN(n)) return 'na';
-  if (n > 0) return 'positive';
-  if (n < 0) return 'negative';
-  return 'zero';
-}
+function rrClass(v)  { const n=parseInt(v); return isNaN(n)?'na':n>0?'pos':n<0?'neg':'zero'; }
+function rrText(v)   { const n=parseInt(v); return isNaN(n)?'N/A':n>0?`+${n}`:`${n}`; }
+function lvlClass(l) { return l>=400?'lv-400':l>=300?'lv-300':l>=200?'lv-200':'lv-1'; }
 
-function formatRRChange(val) {
-  if (val === 'N/A' || val === null || val === undefined) return 'N/A';
-  const n = parseInt(val);
-  if (isNaN(n)) return 'N/A';
-  if (n > 0) return `+${n}`;
-  return `${n}`;
-}
+// ── Rank block (icon + name + sub-line) ───────────────────────────────────────
+function rankBlock(rankIdx, subLine, subClass) {
+  const idx  = clamp(rankIdx || 0, 0, 27);
+  const name = RANK_NAMES[idx];
+  const css  = RANK_CSS[idx];
+  const url  = RANK_ICONS[idx];
 
-function getLevelClass(level) {
-  if (!level) return 'level-100';
-  if (level >= 400) return 'level-400';
-  if (level >= 300) return 'level-300';
-  if (level >= 200) return 'level-200';
-  return 'level-100';
-}
+  const iconHtml = url
+    ? `<img class="rank-icon" src="${esc(url)}" alt="${esc(name)}" loading="lazy">`
+    : `<div class="rank-icon-placeholder"></div>`;
 
-const PARTY_COLORS = [
-  '#e34343','#d843e3','#4346e3','#43e3d0','#5ee343','#e2ed39','#d452cf','#aaaaaa'
-];
-
-let state = {
-  gameState: null,
-  players: {},
-  selfPuuid: null,
-  map: null,
-  agentImages: {},
-  agentNames: {},
-};
-
-// Try to extract agent image links from matchLoadout payloads
-function applyLoadoutData(data) {
-  if (!data || !data.Players) return;
-  Object.entries(data.Players).forEach(([puuid, pdata]) => {
-    if (pdata.Agent) state.agentImages[puuid] = pdata.Agent;
-    if (pdata.Name) state.agentNames[puuid] = pdata.Name;
-  });
-}
-
-function renderTeam(players, teamId, gameState) {
-  if (!players || players.length === 0) return '';
-  const label = teamId === 'Blue' ? 'Attack' : 'Defense';
-  const labelClass = teamId === 'Blue' ? 'blue' : 'red';
-
-  const cards = players.map((p, idx) => renderCard(p, idx)).join('');
   return `
-    <div class="team-section">
-      <div class="team-label ${labelClass}">${label}</div>
-      <div class="players-grid">${cards}</div>
-    </div>
-  `;
+    <div class="rank-cell">
+      <div class="rank-icon-wrap">${iconHtml}</div>
+      <div class="rank-text">
+        <div class="rank-name-text ${css}">${esc(name)}</div>
+        ${subLine ? `<div class="rank-sub ${subClass||''}">${esc(subLine)}</div>` : ''}
+      </div>
+    </div>`;
 }
 
+// ── Card ──────────────────────────────────────────────────────────────────────
 function renderCard(p, idx) {
-  const isSelf = p.puuid === state.selfPuuid;
-  const team = p.team || 'Blue';
-  const nameClass = isSelf ? 'self-color' : (team === 'Blue' ? 'blue' : 'red');
+  const isSelf    = p.puuid === STATE.selfPuuid;
+  const team      = p.team || 'Blue';
+  const nameClass = isSelf ? 'self-color' : (team==='Blue' ? 'blue' : 'red');
 
-  const rankIdx = Math.min(Math.max(p.rank || 0, 0), 27);
-  const peakIdx = Math.min(Math.max(p.peakRank || 0, 0), 27);
-  const rankName = RANKS[rankIdx];
-  const peakName = RANKS[peakIdx];
-  const rankClass = getRankClass(rankIdx);
-  const peakClass = getRankClass(peakIdx);
-
-  const hsVal = p.headshotPercentage;
-  const hsNum = parseInt(hsVal);
-  const hsDisplay = (hsVal === 'N/A' || isNaN(hsNum)) ? 'N/A' : `${hsNum}%`;
-  const hsColor = getHSColor(hsVal);
-  const hsBarWidth = isNaN(hsNum) ? 0 : Math.min(hsNum * 2, 100);
-
-  // RR from last game (RankedRatingEarned via winPercentage field isn't it - it's in the heartbeat data)
-  const rrChange = p.rr_change;
-  const rrChangeClass = getRRChangeClass(rrChange);
-  const rrChangeText = formatRRChange(rrChange);
-
-  const currentRR = p.rr !== undefined ? p.rr : '—';
-  const lvl = p.level || '?';
-  const lvlClass = getLevelClass(p.level);
-
-  // Agent image
-  const agentImg = state.agentImages[p.puuid] || p.agentImgLink;
-  const agentDisplayName = p.agent || state.agentNames[p.puuid] || '?';
-
+  // Agent icon
+  const agentImg  = STATE.agentImages[p.puuid] || p.agentImgLink;
+  const agentName = p.agent || STATE.agentNames[p.puuid] || '?';
   const agentCell = agentImg
-    ? `<img class="agent-icon" src="${agentImg}" alt="${agentDisplayName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-       <div class="agent-fallback" style="display:none">${agentDisplayName.charAt(0)}</div>`
-    : `<div class="agent-fallback">${agentDisplayName !== '?' ? agentDisplayName.charAt(0) : '?'}</div>`;
+    ? `<img class="agent-icon" src="${esc(agentImg)}" alt="${esc(agentName)}"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+       <div class="agent-fallback" style="display:none">${esc(agentName[0]||'?')}</div>`
+    : `<div class="agent-fallback">${esc(agentName[0]||'?')}</div>`;
 
   const partyDot = p.partyNumber > 0
-    ? `<span class="party-icon" style="background:${PARTY_COLORS[(p.partyNumber - 1) % PARTY_COLORS.length]}"></span>`
+    ? `<span class="party-dot" style="background:${PARTY_COLORS[(p.partyNumber-1)%PARTY_COLORS.length]}"></span>`
     : '';
 
-  const peakActStr = p.peakRankAct ? `<span style="color:var(--text-dim);font-size:10px"> ${p.peakRankAct}</span>` : '';
+  // Current rank: show "XX RR" under rank name
+  const currentRank = rankBlock(p.rank, p.rr !== undefined ? `${p.rr} RR` : '', '');
 
-  const animDelay = idx * 0.04;
+  // Peak rank: show act/ep tag under rank name
+  const peakRank = rankBlock(p.peakRank, p.peakRankAct || '', 'dim');
 
-  // Win percentage
-  const wp = p.winPercentage || '';
-  const wpDisplay = wp ? `<div class="wr-chip">${wp}</div>` : '';
+  // HS
+  const hsNum = parseInt(p.headshotPercentage);
+  const hsClr = hsColor(p.headshotPercentage);
+  const hsBar = isNaN(hsNum) ? 0 : Math.min(hsNum * 2, 100);
 
   return `
-    <div class="player-card${isSelf ? ' self' : ''}" style="animation-delay:${animDelay}s">
+    <div class="player-card${isSelf?' self':''}" style="animation-delay:${idx*.04}s">
       <div class="agent-cell">${agentCell}</div>
 
       <div class="name-cell">
-        <div class="player-name ${nameClass}">${partyDot}${escHtml(p.name || 'Unknown')}</div>
-        <div class="agent-name">${escHtml(agentDisplayName)}</div>
+        <div class="player-name ${nameClass}">${partyDot}${esc(p.name||'Unknown')}</div>
+        <div class="agent-sub">${esc(agentName)}</div>
       </div>
 
-      <div class="rank-cell">
-        <div class="rank-name ${rankClass}">${rankName}</div>
-        <div class="rr-value">${currentRR} RR</div>
-        ${wpDisplay}
-      </div>
-
-      <div class="peak-cell">
-        <div class="peak-label">Peak</div>
-        <div class="peak-name ${peakClass}">${peakName}${peakActStr}</div>
-      </div>
+      ${currentRank}
+      ${peakRank}
 
       <div class="hs-cell">
-        <div class="hs-label">HS%</div>
-        <div class="hs-value" style="color:${hsColor}">${hsDisplay}</div>
-        <div class="hs-bar"><div class="hs-bar-fill" style="width:${hsBarWidth}%;background:${hsColor}"></div></div>
+        <div class="cell-label">HS%</div>
+        <div class="hs-value" style="color:${hsClr}">${isNaN(hsNum)?'N/A':hsNum+'%'}</div>
+        <div class="hs-bar"><div class="hs-bar-fill" style="width:${hsBar}%;background:${hsClr}"></div></div>
       </div>
 
       <div class="rr-cell">
-        <div class="rr-label">Last RR</div>
-        <div class="rr-change ${rrChangeClass}">${rrChangeText}</div>
+        <div class="cell-label">Last RR</div>
+        <div class="rr-change ${rrClass(p.rr_change)}">${rrText(p.rr_change)}</div>
       </div>
 
       <div class="level-cell">
-        <div class="level-badge ${lvlClass}">${lvl}</div>
+        <div class="level-badge ${lvlClass(p.level)}">${esc(String(p.level||'?'))}</div>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
-function escHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+function renderTeam(players, teamId) {
+  if (!players.length) return '';
+  const cls   = teamId==='Blue'?'blue':'red';
+  const label = teamId==='Blue'?'Attack':'Defense';
+  return `
+    <div class="team-section">
+      <div class="team-label ${cls}">${label}</div>
+      <div class="players-grid">${players.map((p,i)=>renderCard(p,i)).join('')}</div>
+    </div>`;
 }
 
 function renderHeaders() {
@@ -841,18 +431,27 @@ function renderHeaders() {
       <div class="col-header">Player</div>
       <div class="col-header">Current Rank</div>
       <div class="col-header">Peak Rank</div>
-      <div class="col-header" style="text-align:center">Headshot %</div>
-      <div class="col-header" style="text-align:center">Last Game RR</div>
-      <div class="col-header" style="text-align:center">Level</div>
-    </div>
-  `;
+      <div class="col-header center">HS%</div>
+      <div class="col-header center">Last RR</div>
+      <div class="col-header center">Level</div>
+    </div>`;
 }
 
-function render() {
-  const app = document.getElementById('app');
-  const playerList = Object.values(state.players);
+// ── App state ─────────────────────────────────────────────────────────────────
+const STATE = {
+  gameState:   null,
+  players:     {},
+  selfPuuid:   null,
+  map:         null,
+  agentImages: {},
+  agentNames:  {},
+};
 
-  if (!state.gameState || playerList.length === 0) {
+function render() {
+  const app  = document.getElementById('app');
+  const list = Object.values(STATE.players);
+
+  if (!STATE.gameState || !list.length) {
     app.innerHTML = `
       <div class="empty-state">
         <svg class="empty-icon" viewBox="0 0 64 64" fill="none">
@@ -863,173 +462,132 @@ function render() {
         <div class="empty-sub">
           Connecting to vRY on <span class="ws-url">ws://localhost:1100</span><br>
           Make sure VALORANT and vRY are running.
-          <br><br>
           <div class="connecting"><span></span><span></span><span></span></div>
         </div>
-      </div>
-    `;
+      </div>`;
     return;
   }
 
-  // Separate by team
-  const bluePlayers = playerList.filter(p => p.team === 'Blue');
-  const redPlayers = playerList.filter(p => p.team === 'Red');
-  const noTeam = playerList.filter(p => !p.team);
+  const blue  = list.filter(p => p.team==='Blue');
+  const red   = list.filter(p => p.team==='Red');
+  const other = list.filter(p => !p.team);
 
   let html = renderHeaders();
 
-  if (bluePlayers.length > 0 && redPlayers.length > 0) {
-    html += renderTeam(bluePlayers, 'Blue', state.gameState);
-    html += '<div class="team-divider"></div>';
-    html += renderTeam(redPlayers, 'Red', state.gameState);
-  } else if (noTeam.length > 0) {
-    // MENUS or PREGAME (only allies visible)
-    html += `<div class="team-section"><div class="team-label blue">Your Party / Allies</div><div class="players-grid">${noTeam.map((p, i) => renderCard(p, i)).join('')}</div></div>`;
+  if (blue.length && red.length) {
+    html += renderTeam(blue, 'Blue');
+    html += `<div class="team-divider"></div>`;
+    html += renderTeam(red, 'Red');
+  } else if (other.length) {
+    html += `<div class="team-section">
+      <div class="team-label blue">Your Party / Allies</div>
+      <div class="players-grid">${other.map((p,i)=>renderCard(p,i)).join('')}</div>
+    </div>`;
   } else {
-    // Only one team visible
-    const visible = [...bluePlayers, ...redPlayers];
-    html += `<div class="team-section"><div class="players-grid">${visible.map((p, i) => renderCard(p, i)).join('')}</div></div>`;
+    const all = [...blue,...red];
+    html += `<div class="team-section">
+      <div class="players-grid">${all.map((p,i)=>renderCard(p,i)).join('')}</div>
+    </div>`;
   }
 
   app.innerHTML = html;
 }
 
-function updateStateBadge(gs) {
+function updateHeader(gs) {
   const badge = document.getElementById('stateBadge');
-  const map = document.getElementById('mapInfo');
-  badge.className = 'state-badge';
-  if (!gs) {
-    badge.className += ' waiting';
-    badge.textContent = 'WAITING';
-    return;
-  }
-  const labels = { INGAME: 'IN-GAME', PREGAME: 'AGENT SELECT', MENUS: 'IN-MENUS' };
-  const cls = { INGAME: 'ingame', PREGAME: 'pregame', MENUS: 'menus' };
-  badge.className += ` ${cls[gs] || 'waiting'}`;
-  badge.textContent = labels[gs] || gs;
+  const map   = document.getElementById('mapInfo');
+  const cls   = {INGAME:'ingame',PREGAME:'pregame',MENUS:'menus'};
+  const lbl   = {INGAME:'IN-GAME',PREGAME:'AGENT SELECT',MENUS:'IN-MENUS'};
+  badge.className   = `state-badge ${cls[gs]||'waiting'}`;
+  badge.textContent = lbl[gs] || (gs||'WAITING');
 
-  if (state.map) {
-    map.textContent = state.map;
-    map.style.display = '';
-  } else {
-    map.style.display = 'none';
-  }
+  const m = Array.isArray(STATE.map) ? STATE.map[0] : STATE.map;
+  if (m) { map.textContent=m; map.style.display=''; }
+  else   { map.style.display='none'; }
 }
 
 function setConnected(ok) {
-  const dot = document.getElementById('statusDot');
-  const txt = document.getElementById('statusText');
-  dot.className = 'status-dot ' + (ok ? 'connected' : 'error');
-  txt.textContent = ok ? 'LIVE' : 'DISCONNECTED';
+  document.getElementById('statusDot').className  = 'status-dot '+(ok?'connected':'error');
+  document.getElementById('statusText').textContent = ok?'LIVE':'DISCONNECTED';
 }
 
-function showError(msg) {
-  const el = document.getElementById('errorToast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 4000);
-}
-
-// Process heartbeat
+// ── WebSocket handlers ────────────────────────────────────────────────────────
 function handleHeartbeat(data) {
-  state.gameState = data.state;
-  state.selfPuuid = data.puuid;
-  state.map = data.map && Array.isArray(data.map) ? data.map[0] : data.map;
+  STATE.gameState = data.state;
+  STATE.selfPuuid = data.puuid;
+  STATE.map       = data.map;
 
-  const newPlayers = {};
+  const next = {};
   Object.entries(data.players || {}).forEach(([puuid, p]) => {
-    // Parse RR change out of winPercentage string isn't right — it's in a separate field
-    // The heartbeat doesn't directly give rr_change (RankedRatingEarned), so we track it separately
-    const existing = state.players[puuid] || {};
-    newPlayers[puuid] = {
-      ...existing,
-      puuid,
-      name: p.name,
-      team: p.team,
-      agent: p.agent,
-      rank: p.rank,
-      peakRank: p.peakRank,
-      peakRankAct: p.peakRankAct,
-      rr: p.rr,
+    const prev = STATE.players[puuid] || {};
+    next[puuid] = {
+      ...prev, puuid,
+      name:               p.name,
+      team:               p.team,
+      agent:              p.agent,
+      rank:               p.rank,
+      peakRank:           p.peakRank,
+      peakRankAct:        p.peakRankAct,
+      rr:                 p.rr,
       headshotPercentage: p.headshotPercentage,
-      winPercentage: p.winPercentage,
-      level: p.level,
-      partyNumber: p.partyNumber || 0,
-      agentImgLink: p.agentImgLink || existing.agentImgLink,
-      rr_change: existing.rr_change, // preserved from matchLoadout
+      winPercentage:      p.winPercentage,
+      level:              p.level,
+      partyNumber:        p.partyNumber || 0,
+      agentImgLink:       p.agentImgLink || prev.agentImgLink,
+      rr_change:          prev.rr_change,
     };
   });
-
-  state.players = newPlayers;
-  updateStateBadge(state.gameState);
+  STATE.players = next;
+  updateHeader(STATE.gameState);
   render();
 }
 
-// Process matchLoadout - extract agent images and RR change data
 function handleMatchLoadout(data) {
-  if (!data || !data.Players) return;
-  Object.entries(data.Players).forEach(([puuid, pdata]) => {
-    if (!state.players[puuid]) state.players[puuid] = { puuid };
-    if (pdata.Agent) {
-      state.agentImages[puuid] = pdata.Agent;
-      state.players[puuid].agentImgLink = pdata.Agent;
+  if (!data?.Players) return;
+  Object.entries(data.Players).forEach(([puuid, pd]) => {
+    if (!STATE.players[puuid]) STATE.players[puuid] = { puuid };
+    if (pd.Agent) {
+      STATE.agentImages[puuid] = pd.Agent;
+      STATE.players[puuid].agentImgLink = pd.Agent;
     }
   });
-  // Re-render to update agent images
   render();
 }
 
-// WebSocket connection with reconnect
-let ws = null;
-let reconnectTimer = null;
-let reconnectDelay = 2000;
+// ── WebSocket connection ──────────────────────────────────────────────────────
+let ws, reconnectTimer, reconnectDelay = 2000;
 
 function connect() {
-  try {
-    ws = new WebSocket('ws://localhost:1100');
-  } catch (e) {
-    scheduleReconnect();
-    return;
-  }
+  try { ws = new WebSocket('ws://localhost:1100'); }
+  catch(e) { schedule(); return; }
 
-  ws.onopen = () => {
-    setConnected(true);
-    reconnectDelay = 2000;
-    clearTimeout(reconnectTimer);
-  };
-
-  ws.onmessage = (evt) => {
+  ws.onopen  = () => { setConnected(true); reconnectDelay=2000; clearTimeout(reconnectTimer); };
+  ws.onclose = () => { setConnected(false); schedule(); };
+  ws.onerror = () => { setConnected(false); ws.close(); };
+  ws.onmessage = evt => {
     try {
       const msg = JSON.parse(evt.data);
-      if (msg.type === 'heartbeat') handleHeartbeat(msg);
-      else if (msg.type === 'matchLoadout') handleMatchLoadout(msg);
-    } catch (e) {
-      // ignore
-    }
-  };
-
-  ws.onclose = () => {
-    setConnected(false);
-    scheduleReconnect();
-  };
-
-  ws.onerror = () => {
-    setConnected(false);
-    ws.close();
+      if (msg.type==='heartbeat')    handleHeartbeat(msg);
+      if (msg.type==='matchLoadout') handleMatchLoadout(msg);
+    } catch(_) {}
   };
 }
 
-function scheduleReconnect() {
+function schedule() {
   clearTimeout(reconnectTimer);
   reconnectTimer = setTimeout(() => {
     connect();
-    reconnectDelay = Math.min(reconnectDelay * 1.5, 15000);
+    reconnectDelay = Math.min(reconnectDelay*1.5, 15000);
   }, reconnectDelay);
 }
 
-// Initial render (empty state)
-render();
-connect();
+// ── Boot ──────────────────────────────────────────────────────────────────────
+(async () => {
+  render();        // show empty/loading state immediately
+  connect();       // start WS
+  await loadRankIcons();  // fetch rank icons in background
+  render();        // re-render once icons are ready
+})();
 </script>
 </body>
 </html>
