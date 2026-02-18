@@ -346,9 +346,17 @@ function hsColor(hs) {
 function kdColor(kd) {
   const n = parseFloat(kd);
   if (isNaN(n)) return '#5a607a';
-  if (n >= 1.5) return '#12cc19';
-  if (n >= 1.0) return '#c5ba3f';
-  if (n >= 0.7) return '#bb8f5a';
+  if (n >= 1.1) return '#12cc19';
+  if (n >= 0.9) return '#c5ba3f';
+  return '#dd4444';
+}
+
+function wrColor(wr) {
+  const n = parseInt(wr);
+  if (isNaN(n)) return '#5a607a';
+  if (n >= 53) return '#12cc19';
+  if (n >= 48) return '#c5ba3f';
+  if (n >= 40) return '#bb8f5a';
   return '#dd4444';
 }
 
@@ -405,8 +413,10 @@ function renderCard(p, idx) {
   const hsClr = hsColor(p.headshotPercentage);
   const hsBar = isNaN(hsNum) ? 0 : Math.min(hsNum * 2, 100);
 
-  // Win Rate
-  const wr = p.winPercentage !== undefined ? p.winPercentage : 'N/A';
+  // Win Rate — strip bracketed game count e.g. "54 (120)" -> "54"
+  const wrRaw = p.winPercentage !== undefined ? String(p.winPercentage) : 'N/A';
+  const wrNum = wrRaw.replace(/\s*\(.*?\)/, '').trim();
+  const wrClr = wrColor(wrNum);
 
   // K/D
   const kdVal = p.kd !== undefined ? p.kd : 'N/A';
@@ -445,7 +455,7 @@ function renderCard(p, idx) {
       <div class="wr-cell">
         <div class="cell-label">Win Rate</div>
         <div class="stat-value-row">
-          <div class="wr-value">${esc(String(wr))}</div>
+          <div class="wr-value" style="color:${wrClr}">${esc(wrNum)}</div>
         </div>
       </div>
 
