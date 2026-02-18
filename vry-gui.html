@@ -348,6 +348,7 @@ function kdColor(kd) {
   if (isNaN(n)) return '#5a607a';
   if (n >= 1.1) return '#12cc19';
   if (n >= 0.9) return '#c5ba3f';
+  if (n >= 0.7) return '#bb8f5a';
   return '#dd4444';
 }
 
@@ -455,7 +456,7 @@ function renderCard(p, idx) {
       <div class="wr-cell">
         <div class="cell-label">Win Rate</div>
         <div class="stat-value-row">
-          <div class="wr-value" style="color:${wrClr}">${esc(wrNum)}</div>
+          <div class="wr-value" style="color:${wrClr}">${wrNum === 'N/A' ? 'N/A' : esc(wrNum) + '%'}</div>
         </div>
       </div>
 
